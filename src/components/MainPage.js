@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import { login, getGoogleLoginUrl, getNaverLoginUrl } from '../services/api';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Button, Input, Form, Spin } from 'antd';
 import './MainPage.css';
 
 function MainPage({ onLogin, onSignupClick }) {
+  const navigate = useNavigate();
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -61,6 +63,7 @@ function MainPage({ onLogin, onSignupClick }) {
     try {
       const authUrl = await getGoogleLoginUrl();
       window.location.href = authUrl;
+      navigate('/dashboard');
     } catch (error) {
       alert('구글 로그인에 실패했습니다.');
       console.error('구글 로그인 오류:', error);
@@ -71,6 +74,7 @@ function MainPage({ onLogin, onSignupClick }) {
     try {
       const authUrl = await getNaverLoginUrl();
       window.location.href = authUrl;
+      navigate('/dashboard');
     } catch (error) {
       alert('네이버 로그인에 실패했습니다.');
       console.error('네이버 로그인 오류:', error);

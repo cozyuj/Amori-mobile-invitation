@@ -53,17 +53,18 @@ export const login = async (email, password) => {
  */
 export const getCurrentUser = async () => {
   const token = localStorage.getItem('access_token');
-  const headers = {};
   
   // 일반 로그인일 경우 Authorization 헤더 추가
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+  if (!token) {
+    throw new Error('로그인이 필요합니다.');
   }
 
   try {
     const response = await fetch(`${API_BASE_URL}/api/user/me`, {
       method: 'GET',
-      headers,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
       credentials: 'include', // 쿠키 인증 자동 포함 (소셜 로그인 대응)
     });
 
@@ -79,39 +80,12 @@ export const getCurrentUser = async () => {
     const user = await response.json();
 
     // 일반 로그인인 경우 localStorage에 사용자 정보 저장
-    if (token) {
-      localStorage.setItem('user', JSON.stringify(user));
-    }
-
+    localStorage.setItem('user', JSON.stringify(user));
     return user;
   } catch (error) {
     console.error('[DEBUG] 사용자 정보 조회 실패:', error);
     throw error;
   }
-
-
-  // if (!token) {
-  //   throw new Error('로그인이 필요합니다.');
-  // }
-
-  // const response = await fetch(`${API_BASE_URL}/api/user/me`, {
-  //   method: 'GET',
-  //   headers: {
-  //     'Authorization': `Bearer ${token}`,
-  //   },
-  // });
-
-  // if (!response.ok) {
-  //   // 토큰이 만료되었거나 유효하지 않은 경우
-  //   localStorage.removeItem('access_token');
-  //   localStorage.removeItem('user');
-  //   throw new Error('인증이 만료되었습니다.');
-  // }
-
-  // const user = await response.json();
-  // localStorage.setItem('user', JSON.stringify(user));
-  
-  // return user;
 };
 
 /**
