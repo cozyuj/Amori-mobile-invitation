@@ -5,7 +5,6 @@ import { Button, Input, Form, Spin } from 'antd';
 import './MainPage.css';
 
 function MainPage({ onLogin, onSignupClick }) {
-  const navigate = useNavigate();
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
