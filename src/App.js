@@ -79,11 +79,11 @@ function AppContent() {
         <Route path="/" element={<MainPage onLogin={handleLogin} onSignupClick={() => navigate('/signup')} />} />
         <Route path="/signup" element={<SignupPage onBack={() => navigate('/')} onSignup={handleSignup} />} />
           <Route 
-            path="/auth/google/callback" 
+            path="/api//auth/google/callback" 
             element={<GoogleCallback />} 
           />
           <Route 
-            path="/auth/naver/callback" 
+            path="/api/auth/naver/callback" 
             element={<NaverCallback />} 
           />
         <Route
