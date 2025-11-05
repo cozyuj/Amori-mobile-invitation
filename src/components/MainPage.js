@@ -1,6 +1,5 @@
 import React, { useState, useEffect} from 'react';
 import { login, getGoogleLoginUrl, getNaverLoginUrl } from '../services/api';
-import { useNavigate } from 'react-router-dom';
 import { Button, Input, Form, Spin } from 'antd';
 import './MainPage.css';
 
