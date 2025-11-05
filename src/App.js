@@ -11,6 +11,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { getCurrentUser, isLoggedIn as checkLogin, logout as apiLogout, getStoredUser } from './services/api';
 import './App.css';
 
+import GoogleCallback from './components/GoogleCallback'; 
+import NaverCallback from './components/NaverCallback';
+
 function AppContent() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -75,6 +78,14 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<MainPage onLogin={handleLogin} onSignupClick={() => navigate('/signup')} />} />
         <Route path="/signup" element={<SignupPage onBack={() => navigate('/')} onSignup={handleSignup} />} />
+          <Route 
+            path="/auth/google/callback" 
+            element={<GoogleCallback />} 
+          />
+          <Route 
+            path="/auth/naver/callback" 
+            element={<NaverCallback />} 
+          />
         <Route
           path="/dashboard"
           element={
