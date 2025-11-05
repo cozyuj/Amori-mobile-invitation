@@ -60,23 +60,23 @@ function MainPage({ onLogin, onSignupClick }) {
   const handleGoogleLogin = async () => {
     try {
       const authUrl = await getGoogleLoginUrl();
+      // OAuth 플로우는 리다이렉트로 처리되므로 navigate 제거
       window.location.href = authUrl;
     } catch (error) {
       alert('구글 로그인에 실패했습니다.');
       console.error('구글 로그인 오류:', error);
     }
   };
-
   const handleNaverLogin = async () => {
     try {
       const authUrl = await getNaverLoginUrl();
+      // OAuth 플로우는 리다이렉트로 처리되므로 navigate 제거
       window.location.href = authUrl;
     } catch (error) {
       alert('네이버 로그인에 실패했습니다.');
       console.error('네이버 로그인 오류:', error);
     }
   };
-
   
 
   return (

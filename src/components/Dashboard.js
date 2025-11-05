@@ -13,11 +13,15 @@ function Dashboard({ username: initialUsername = '사용자', onLogout, onNewCre
   useEffect(() => {
     const init = async () => {
       try {
-        // URL 토큰(OAuth) 제거 및 서버에서 최신 사용자 정보 가져오기
+        // URL 토큰(OAuth) 처리: localStorage에 저장 후 URL 정리
         const params = new URLSearchParams(window.location.search);
-        if (params.has('token')) {
+        const token = params.get('token');
+        if (token) {
+          localStorage.setItem('access_token', token);
           window.history.replaceState({}, '', '/dashboard');
         }
+        
+        // 서버에서 최신 사용자 정보 가져오기
         const user = await getCurrentUser();
         setUsername(user?.name || initialUsername);
       } catch (e) {
