@@ -43,6 +43,7 @@ def get_current_user(
         print("[INFO] JWT_SECRET_KEY: ", JWT_SECRET_KEY);
         print(JWT_ALGORITHM)
         print("1")
+        print(token)
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
         print("2")
         print(token)
