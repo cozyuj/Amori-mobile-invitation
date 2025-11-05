@@ -41,7 +41,7 @@ async def naver_login():
     return RedirectResponse(url)
 
 
-@router.get("/naver/callback")
+@router.get("/nid/callback")
 async def naver_callback(code: str, state: str, db: Session = Depends(get_db)):
     """
     네이버 OAuth 콜백 (쿠키 기반)
