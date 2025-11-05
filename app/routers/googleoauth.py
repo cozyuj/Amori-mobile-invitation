@@ -157,8 +157,8 @@ async def google_callback(code: str, state: str, db: Session = Depends(get_db)):
             key="access_token",
             value=jwt_token,
             httponly=True,
-            secure=False,    
-            samesite="lax",  # 필요 시 "none"
+            secure=True,    
+            samesite="None",  # 필요 시 "none"
             max_age=3600
         )
         return response
