@@ -152,6 +152,7 @@ paths:
           required: true
       x-google-backend:
         address: http://34.50.146.225.nip.io/api/user/me
+        disable_auth: true
       responses:
         '200':
           description: User info retrieved

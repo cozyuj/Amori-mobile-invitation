@@ -139,20 +139,12 @@ async def naver_callback(code: str, state: str, db: Session = Depends(get_db)):
 
         db.commit()
 
-        # --- JWT 발급 + 쿠키 저장 ---
+        # --- JWT 발급 ---
         jwt_token = create_access_token(subject=str(user.id))
 
-        response = RedirectResponse(url="https://amori.co.kr/dashboard")
-        response.set_cookie(
-            key="access_token",
-            value=jwt_token,
-            httponly=True,       # JS 접근 불가
-            secure=True,        # 배포 시 True (https일 경우)
-            samesite="lax",      # 프론트 도메인이 동일할 때 안전
-            max_age=3600,        # 쿠키 만료 시간 1시간
-        )
-
-        return response
+        # URL 파라미터로 토큰 전달 (크로스 도메인 문제 해결)
+        redirect_url = f"https://amori.co.kr/dashboard?token={jwt_token}"
+        return RedirectResponse(url=redirect_url)
 
     except HTTPException:
         raise

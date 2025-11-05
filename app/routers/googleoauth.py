@@ -152,16 +152,9 @@ async def google_callback(code: str, state: str, db: Session = Depends(get_db)):
         # --- JWT 토큰 발급 ---
         jwt_token = create_access_token(subject=str(user.id))
 
-        response = RedirectResponse(url="https://amori.co.kr/dashboard")
-        response.set_cookie(
-            key="access_token",
-            value=jwt_token,
-            httponly=True,
-            secure=True,    
-            samesite="None",  # 필요 시 "none"
-            max_age=3600
-        )
-        return response
+        # URL 파라미터로 토큰 전달 (크로스 도메인 문제 해결)
+        redirect_url = f"https://amori.co.kr/dashboard?token={jwt_token}"
+        return RedirectResponse(url=redirect_url)
 
     except HTTPException:
         raise
