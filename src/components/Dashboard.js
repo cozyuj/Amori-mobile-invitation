@@ -16,16 +16,23 @@ function Dashboard({ username: initialUsername = '사용자', onLogout, onNewCre
         // URL 토큰(OAuth) 처리: localStorage에 저장 후 URL 정리
         const params = new URLSearchParams(window.location.search);
         const token = params.get('token');
+        console.log('[DEBUG] Dashboard - URL token:', token);
+        console.log('[DEBUG] Dashboard - Current URL:', window.location.href);
+        
         if (token) {
+          console.log('[DEBUG] Dashboard - Saving token to localStorage');
           localStorage.setItem('access_token', token);
           window.history.replaceState({}, '', '/dashboard');
         }
         
         // 서버에서 최신 사용자 정보 가져오기
+        console.log('[DEBUG] Dashboard - Fetching user info');
         const user = await getCurrentUser();
+        console.log('[DEBUG] Dashboard - User fetched:', user);
         setUsername(user?.name || initialUsername);
       } catch (e) {
         // 인증 실패 시 로그인 페이지로 이동
+        console.error('[ERROR] Dashboard - Auth failed:', e);
         navigate('/login');
       } finally {
         setIsLoading(false);
