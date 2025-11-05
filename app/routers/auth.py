@@ -9,7 +9,7 @@ from typing import Optional
 from app.database import get_db
 from app.models import User, UserCredential
 from app.schemas import SignupRequest, SignupResponse, LoginRequest, LoginResponse, UserResponse  # , ImageUploadResponse
-from app.security import hash_password, verify_password, create_access_token
+from app.security import hash_password, verify_password, create_access_token, JWT_SECRET_KEY
 # from app.gcs_utils import upload_image_to_gcs
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
@@ -146,6 +146,7 @@ async def login(
     db.commit()
     
     # JWT 토큰 생성 (subject에 user ID 저장)
+    print("[INFO] Login JWT_SECRET_KEY: ", JWT_SECRET_KEY)
     access_token = create_access_token(subject=str(user.id))
     
     return LoginResponse(
