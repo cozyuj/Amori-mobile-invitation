@@ -79,7 +79,7 @@ function AppContent() {
         <Route path="/" element={<MainPage onLogin={handleLogin} onSignupClick={() => navigate('/signup')} />} />
         <Route path="/signup" element={<SignupPage onBack={() => navigate('/')} onSignup={handleSignup} />} />
           <Route 
-            path="/api//auth/google/callback" 
+            path="/api/auth/google/callback" 
             element={<GoogleCallback />} 
           />
           <Route 
