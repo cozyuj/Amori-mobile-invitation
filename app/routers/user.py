@@ -41,12 +41,21 @@ def get_current_user(
 
     try:
         print("[INFO] JWT_SECRET_KEY: ", JWT_SECRET_KEY);
+        print(JWT_ALGORITHM)
+        print(payload)
+        print("1")
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        print("2")
+        print(payload)
+        print("3")
         user_id = payload.get("sub")
+        print("4")
+        print(user_id)
         if not user_id:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload")
-
+        print("5")
         user = db.query(User).filter(User.id == int(user_id)).first()
+        print("6")
         if not user or user.status != "ACTIVE":
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found or inactive")
 
