@@ -142,10 +142,10 @@ async def naver_callback(code: str, state: str, db: Session = Depends(get_db)):
         # --- JWT 발급 ---
         jwt_token = create_access_token(subject=str(user.id))
 
-        return JSONResponse(content={"token": jwt_token})
+        # return JSONResponse(content={"token": jwt_token})
         # URL 파라미터로 토큰 전달 (크로스 도메인 문제 해결)
-        # redirect_url = f"https://amori.co.kr/dashboard?token={jwt_token}"
-        # return RedirectResponse(url=redirect_url)
+        redirect_url = f"https://amori.co.kr/dashboard?token={jwt_token}"
+        return RedirectResponse(url=redirect_url)
 
     except HTTPException:
         raise
