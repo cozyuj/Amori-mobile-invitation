@@ -40,11 +40,11 @@ export const login = async (email, password) => {
   }
 
   const data = await response.json();
-  
+
   // JWT 토큰 저장
   localStorage.setItem('access_token', data.access_token);
   localStorage.setItem('user', JSON.stringify(data.user));
-  
+
   return data;
 };
 
@@ -53,23 +53,25 @@ export const login = async (email, password) => {
  */
 export const getCurrentUser = async () => {
   const token = localStorage.getItem('access_token');
-  
+
+  const options = {
+    method: 'GET',
+  };
+  if (token) {
+    options.headers = { 'Authorization': `Bearer ${token}` };
+  } else {
+    options.credentials = 'include';
+  }
+
   // 일반 로그인일 경우 Authorization 헤더 추가
   if (!token) {
     throw new Error('로그인이 필요합니다.');
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/user/me`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-      credentials: 'include', // 쿠키 인증 자동 포함 (소셜 로그인 대응)
-    });
+    const response = await fetch(`${API_BASE_URL}/api/user/me`, options);
 
     if (!response.ok) {
-      // 토큰 만료 또는 인증 실패 시
       if (token) {
         localStorage.removeItem('access_token');
         localStorage.removeItem('user');
@@ -78,9 +80,9 @@ export const getCurrentUser = async () => {
     }
 
     const user = await response.json();
-
-    // 일반 로그인인 경우 localStorage에 사용자 정보 저장
-    localStorage.setItem('user', JSON.stringify(user));
+    if (token) {
+      localStorage.setItem('user', JSON.stringify(user));
+    }
     return user;
   } catch (error) {
     console.error('[DEBUG] 사용자 정보 조회 실패:', error);
@@ -159,14 +161,14 @@ export const getKakaoLoginUrl = async () => {
  * 네이버 로그인 URL 요청
  */
 export const getNaverLoginUrl = async () => {
-  return`${API_BASE_URL}/api/oauth/nid/login`;
+  return `${API_BASE_URL}/api/oauth/nid/login`;
 };
 
 /**
  * 구글 로그인 URL 요청
  */
 export const getGoogleLoginUrl = async () => {
-  return`${API_BASE_URL}/api/oauth/google/login`;
+  return `${API_BASE_URL}/api/oauth/google/login`;
 };
 
 // ===== Invitations APIs =====
