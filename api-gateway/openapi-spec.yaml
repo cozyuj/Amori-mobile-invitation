@@ -250,6 +250,13 @@ paths:
           headers:
             Access-Control-Allow-Origin:
               type: string
+        '307': # 이 부분을 추가
+          description: Redirect to frontend dashboard
+          headers:
+            Location:
+              type: string
+            Access-Control-Allow-Origin:
+              type: string
         '400':
           description: OAuth failed
           headers:

@@ -162,8 +162,8 @@ async def google_callback(code: str, state: str, db: Session = Depends(get_db)):
 
     except HTTPException:
         raise
-    except Exception as e:
-        print(f"[ERROR] 구글 로그인 오류: {e}")
-        error_url = "https://amori.co.kr/login?error=oauth_failed"
-        return RedirectResponse(url=error_url)
+    # except Exception as e:
+        # print(f"[ERROR] 구글 로그인 오류: {e}")
+        # error_url = "https://amori.co.kr/login?error=oauth_failed"
+        # return RedirectResponse(url=error_url)
     
