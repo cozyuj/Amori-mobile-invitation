@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { DatePicker, TimePicker, Input, Button } from 'antd';
+import dayjs from 'dayjs';
 import { uploadCoverImage, createInvitationDraft, searchPlaces } from '../services/api';
 
 // 5개의 화면(단계)을 각각의 컴포넌트로 분리합니다.
@@ -10,12 +12,29 @@ import { uploadCoverImage, createInvitationDraft, searchPlaces } from '../servic
 
 // 단계 1: 결혼식 청첩장 선택 (예식 날짜 및 시간)
 const Step1 = ({ username, value, onChange, onNext }) => {
-  const now = new Date();
-  const years = Array.from({ length: 5 }, (_, i) => now.getFullYear() + i);
-  const months = Array.from({ length: 12 }, (_, i) => i + 1);
-  const days = Array.from({ length: 31 }, (_, i) => i + 1);
-  const hours = Array.from({ length: 24 }, (_, i) => i);
-  const minutes = [0, 10, 20, 30, 40, 50];
+  const handleDateChange = (date) => {
+    if (date) {
+      onChange({
+        ...value,
+        year: date.year(),
+        month: date.month() + 1,
+        day: date.date(),
+      });
+    }
+  };
+
+  const handleTimeChange = (time) => {
+    if (time) {
+      onChange({
+        ...value,
+        hour: time.hour(),
+        minute: time.minute(),
+      });
+    }
+  };
+
+  const dateValue = dayjs(`${value.year}-${String(value.month).padStart(2, '0')}-${String(value.day).padStart(2, '0')}`);
+  const timeValue = dayjs().hour(value.hour).minute(value.minute).second(0);
 
   return (
     <div className="wizard-step">
@@ -23,26 +42,22 @@ const Step1 = ({ username, value, onChange, onNext }) => {
       <p className="wizard-subtitle">예식 날짜와 시간을 선택해주세요. <br />나중에 변경할 수 있어요.</p>
       <div className="wizard-input-group">
         <label>예식 날짜</label>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <select value={value.year} onChange={(e) => onChange({ ...value, year: Number(e.target.value) })} style={{ flex: 1, padding: '10px' }}>
-            {years.map(y => <option key={y} value={y}>{y}년</option>)}
-          </select>
-          <select value={value.month} onChange={(e) => onChange({ ...value, month: Number(e.target.value) })} style={{ flex: 1, padding: '10px' }}>
-            {months.map(m => <option key={m} value={m}>{m}월</option>)}
-          </select>
-          <select value={value.day} onChange={(e) => onChange({ ...value, day: Number(e.target.value) })} style={{ flex: 1, padding: '10px' }}>
-            {days.map(d => <option key={d} value={d}>{d}일</option>)}
-          </select>
-        </div>
-        <label>예식 시간</label>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <select value={value.hour} onChange={(e) => onChange({ ...value, hour: Number(e.target.value) })} style={{ flex: 1, padding: '10px' }}>
-            {hours.map(h => <option key={h} value={h}>{String(h).padStart(2, '0')}시</option>)}
-          </select>
-          <select value={value.minute} onChange={(e) => onChange({ ...value, minute: Number(e.target.value) })} style={{ flex: 1, padding: '10px' }}>
-            {minutes.map(m => <option key={m} value={m}>{String(m).padStart(2, '0')}분</option>)}
-          </select>
-        </div>
+        <DatePicker
+          value={dateValue}
+          onChange={handleDateChange}
+          format="YYYY년 MM월 DD일"
+          style={{ width: '100%', padding: '10px' }}
+          size="large"
+        />
+        <label style={{ marginTop: '16px' }}>예식 시간</label>
+        <TimePicker
+          value={timeValue}
+          onChange={handleTimeChange}
+          format="HH시 mm분"
+          style={{ width: '100%', padding: '10px' }}
+          size="large"
+          minuteStep={10}
+        />
       </div>
       <button className="wizard-btn-primary" onClick={onNext}>
         다음
@@ -79,10 +94,32 @@ const Step2 = ({ username, address, venueName, onChange, onNext }) => {
     <div className="wizard-step">
       <h2 className="wizard-title">{username}님, <br />예식 장소를 입력해주세요.</h2>
       <div className="wizard-input-group">
-        <label>예식장 이름을 입력해주세요</label>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <input type="text" value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="예: W스퀘어컨벤션" style={{ flex: 1, padding: '10px' }} />
-          <button className="wizard-btn-primary" onClick={doSearch} disabled={loading}>{loading ? '검색중' : '검색'}</button>
+        <label>예식장 이름을 검색해주세요</label>
+        <div style={{ position: 'relative', width: '100%' }}>
+          <Input
+            type="text"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            onPressEnter={doSearch}
+            size="large"
+            style={{ paddingRight: '75px' }}
+          />
+          <Button
+            type="primary"
+            onClick={doSearch}
+            disabled={loading}
+            loading={loading}
+            style={{
+              position: 'absolute',
+              right: '4px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: '67px',
+              height: 'calc(100% - 8px)',
+            }}
+          >
+            {loading ? '검색중' : '검색'}
+          </Button>
         </div>
 
         {/* 검색 결과 리스트 */}
@@ -98,9 +135,9 @@ const Step2 = ({ username, address, venueName, onChange, onNext }) => {
         )}
 
         <label style={{ marginTop: '16px' }}>예식장 이름</label>
-        <input type="text" value={venueName} onChange={(e) => onChange({ address, venueName: e.target.value })} placeholder="W스퀘어컨벤션" />
+        <Input type="text" value={venueName} onChange={(e) => onChange({ address, venueName: e.target.value })} size="large" />
         <label>주소</label>
-        <input type="text" value={address} onChange={(e) => onChange({ address: e.target.value, venueName })} placeholder="경기도 성남시 분당구 판교로 228번길 16" />
+        <Input type="text" value={address} onChange={(e) => onChange({ address: e.target.value, venueName })} size="large" />
       </div>
       <button className="wizard-btn-primary" onClick={onNext}>
         다음
@@ -116,9 +153,9 @@ const Step3 = ({ username, groomName, brideName, onChange, onNext }) => (
     <p className="wizard-subtitle">중복 입력 없이 쉽게 도와드릴게요. <br />나중에 변경할 수 있어요.</p>
     <div className="wizard-input-group">
       <label>신랑님 성함</label>
-      <input type="text" value={groomName} onChange={(e) => onChange({ groomName: e.target.value, brideName })} placeholder="(신랑이름)" />
+      <Input type="text" value={groomName} onChange={(e) => onChange({ groomName: e.target.value, brideName })} size="large" />
       <label>신부님 성함</label>
-      <input type="text" value={brideName} onChange={(e) => onChange({ groomName, brideName: e.target.value })} placeholder="(신부이름)" />
+      <Input type="text" value={brideName} onChange={(e) => onChange({ groomName, brideName: e.target.value })} size="large" />
     </div>
     <button className="wizard-btn-primary" onClick={onNext}>
       다음
@@ -131,7 +168,7 @@ const Step4 = ({ username, coverPreview, onFileSelected, onNext }) => {
   return (
     <div className="wizard-step">
       <h2 className="wizard-title">{username}님, <br />청첩장 메인 커버사진을 골라주세요.</h2>
-      <p className="wizard-subtitle">행복한 커버사진으로 사용돼요. <br />나중에 변경할 수 있어요.</p>
+      <p className="wizard-subtitle">나중에 변경할 수 있어요.</p>
       <label htmlFor="cover-image-upload" className="wizard-image-placeholder large upload-box" style={{ cursor: 'pointer' }}>
         {coverPreview ? (
           <img src={coverPreview} alt="커버 사진" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
