@@ -46,7 +46,7 @@ const Step1 = ({ username, value, onChange, onNext }) => {
           value={dateValue}
           onChange={handleDateChange}
           format="YYYY년 MM월 DD일"
-          style={{ width: '100%', padding: '10px' }}
+          style={{ width: '100%' }}
           size="large"
         />
         <label style={{ marginTop: '16px' }}>예식 시간</label>
@@ -54,7 +54,7 @@ const Step1 = ({ username, value, onChange, onNext }) => {
           value={timeValue}
           onChange={handleTimeChange}
           format="HH시 mm분"
-          style={{ width: '100%', padding: '10px' }}
+          style={{ width: '100%' }}
           size="large"
           minuteStep={10}
         />
@@ -77,7 +77,7 @@ const Step2 = ({ username, address, venueName, onChange, onNext }) => {
     try {
       setLoading(true);
       const data = await searchPlaces(searchText.trim());
-      setResults(data.items || []);
+      setResults(data);
     } catch (e) {
       alert(e.message || '검색 실패');
     } finally {
@@ -87,6 +87,7 @@ const Step2 = ({ username, address, venueName, onChange, onNext }) => {
 
   const handleSelect = (item) => {
     onChange({ address: item.address || '', venueName: item.name || '' });
+    setSearchText(item.name || '');
     setResults([]);
   };
 
@@ -102,7 +103,7 @@ const Step2 = ({ username, address, venueName, onChange, onNext }) => {
             onChange={(e) => setSearchText(e.target.value)}
             onPressEnter={doSearch}
             size="large"
-            style={{ paddingRight: '75px' }}
+            style={{ paddingRight: '80px' }}
           />
           <Button
             type="primary"
@@ -126,7 +127,11 @@ const Step2 = ({ username, address, venueName, onChange, onNext }) => {
         {results.length > 0 && (
           <div style={{ marginTop: '12px', border: '1px solid #e5e5e5', borderRadius: 6, maxHeight: 220, overflowY: 'auto' }}>
             {results.map((item, idx) => (
-              <div key={`${item.name}-${idx}`} style={{ padding: '10px 12px', cursor: 'pointer', borderBottom: '1px solid #f2f2f2' }} onClick={() => handleSelect(item)}>
+              <div
+                key={item.id || `${item.name}-${idx}`}
+                style={{ padding: '10px 12px', cursor: 'pointer', borderBottom: '1px solid #f2f2f2' }}
+                onClick={() => handleSelect(item)}
+              >
                 <div style={{ fontWeight: 600 }}>{item.name}</div>
                 <div style={{ color: '#666', fontSize: 12 }}>{item.address}</div>
               </div>

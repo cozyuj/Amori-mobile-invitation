@@ -3,7 +3,8 @@
  * Handles authentication and user data
  */
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_URL ;
+const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
 /**
  * 회원가입 API 호출
@@ -212,14 +213,31 @@ export const createInvitationDraft = async (payload) => {
 
 // ===== Places Search API =====
 export const searchPlaces = async (query, size = 10) => {
-  const url = new URL(`${API_BASE_URL}/api/places/search`);
+  if (!GOOGLE_MAPS_API_KEY) {
+    throw new Error('Google Maps API 키가 설정되지 않았습니다.');
+  }
+  const url = new URL('https://maps.googleapis.com/maps/api/place/textsearch/json');
   url.searchParams.set('query', query);
-  url.searchParams.set('size', size);
+  url.searchParams.set('key', GOOGLE_MAPS_API_KEY);
+  url.searchParams.set('language', 'ko');
+  url.searchParams.set('region', 'KR');
 
   const response = await fetch(url.toString(), { method: 'GET' });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.detail || '장소 검색 실패');
+    throw new Error('장소 검색 실패');
   }
-  return response.json();
+
+  const data = await response.json();
+  if (data.status && data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
+    throw new Error(data.error_message || '장소 검색 실패');
+  }
+
+  const results = (data.results || []).slice(0, size).map((place) => ({
+    id: place.place_id,
+    name: place.name,
+    address: place.formatted_address || '',
+    location: place.geometry?.location || null,
+  }));
+
+  return results;
 };
