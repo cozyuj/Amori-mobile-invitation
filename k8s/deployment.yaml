@@ -99,6 +99,11 @@ spec:
             secretKeyRef:
               name: google-oauth-secret
               key: GOOGLE_REDIRECT_URI
+        - name: GOOGLE_MAPS_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: amori-secrets
+              key: google-maps-api-key
         resources:
           requests:
             cpu: "100m"

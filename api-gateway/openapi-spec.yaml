@@ -345,3 +345,77 @@ paths:
       responses:
         '204': # 200 -> 204
           description: CORS preflight response
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+            Access-Control-Allow-Credentials:
+              type: string
+  /api/places/search:
+    get:
+      summary: Search places using Google Places API
+      operationId: searchPlaces
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: query
+          type: string
+          required: true
+          minLength: 1
+          maxLength: 100
+        - in: query
+          name: size
+          type: integer
+          required: false
+          default: 10
+      x-google-backend:
+        address: http://34.50.146.225.nip.io/api/places/search
+      responses:
+        '200':
+          description: Places search successful
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                address:
+                  type: string
+                location:
+                  type: object
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+        '400':
+          description: Bad request
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+        '500':
+          description: Internal server error
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+    options:
+      summary: CORS preflight for places search
+      operationId: searchPlacesCors
+      # x-google-backend: removed
+      responses:
+        '204': # 200 -> 204
+          description: CORS preflight response
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+            Access-Control-Allow-Credentials:
+              type: string
