@@ -227,7 +227,7 @@ const Step4 = ({ username, coverPreview, onFileSelected, onNext }) => {
           <Image
             src={coverPreview}
             alt="커버 사진"
-            style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+            style={{ width: '100%', height: '500px', objectFit: 'cover' }}
             preview={{
               mask: '미리보기'
             }}
@@ -241,7 +241,7 @@ const Step4 = ({ username, coverPreview, onFileSelected, onNext }) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              height: '300px',
+              height: '500px',
               border: '2px dashed #d9d9d9',
               borderRadius: '8px'
             }}
@@ -249,7 +249,7 @@ const Step4 = ({ username, coverPreview, onFileSelected, onNext }) => {
             <div style={{ textAlign: 'center' }}>
               <span style={{ fontSize: '32px', color: '#ccc' }}>+</span>
               <br />
-              <span style={{ color: '#666' }}>클릭하여 사진 업로드</span>
+              <span style={{ color: '#666', fontSize: '13px' }}>클릭하여 사진 업로드</span>
             </div>
           </label>
         )}
@@ -280,7 +280,7 @@ const Step5 = ({ username, onNext, coverPreview }) => (
       <Image
         src={coverPreview || "https://i.imgur.com/gS4kXcp.png"}
         alt="Wedding photo"
-        style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+        style={{ width: '100%', height: '500px', objectFit: 'cover' }}
         preview={{
           mask: '미리보기'
         }}
