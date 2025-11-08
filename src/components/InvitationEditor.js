@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DatePicker, TimePicker, Input, Button } from 'antd';
 import dayjs from 'dayjs';
 import { uploadCoverImage, createInvitationDraft, searchPlaces } from '../services/api';
@@ -71,6 +71,24 @@ const Step2 = ({ username, address, venueName, onChange, onNext }) => {
   const [searchText, setSearchText] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const searchContainerRef = useRef(null);
+
+  // 외부 클릭 시 드롭다운 닫기
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+        setResults([]);
+      }
+    };
+
+    if (results.length > 0) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [results.length]);
 
   const doSearch = async () => {
     if (!searchText.trim()) return;
@@ -96,7 +114,7 @@ const Step2 = ({ username, address, venueName, onChange, onNext }) => {
       <h2 className="wizard-title">{username}님, <br />예식 장소를 입력해주세요.</h2>
       <div className="wizard-input-group">
         <label>예식장 이름을 검색해주세요</label>
-        <div style={{ position: 'relative', width: '100%' }}>
+        <div ref={searchContainerRef} style={{ position: 'relative', width: '100%' }}>
           <Input
             type="text"
             value={searchText}
@@ -121,23 +139,53 @@ const Step2 = ({ username, address, venueName, onChange, onNext }) => {
           >
             {loading ? '검색중' : '검색'}
           </Button>
+          
+          {/* 검색 결과 드롭다운 */}
+          {results.length > 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0,
+                marginTop: '4px',
+                backgroundColor: 'white',
+                border: '1px solid #e5e5e5',
+                borderRadius: '6px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                maxHeight: '220px',
+                overflowY: 'auto',
+                zIndex: 1000,
+              }}
+            >
+              {results.map((item, idx) => (
+                <div
+                  key={item.id || `${item.name}-${idx}`}
+                  style={{
+                    padding: '12px 16px',
+                    cursor: 'pointer',
+                    borderBottom: idx < results.length - 1 ? '1px solid #f2f2f2' : 'none',
+                    transition: 'background-color 0.2s',
+                  }}
+                  onClick={() => handleSelect(item)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f5f5f5';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'white';
+                  }}
+                >
+                  <div style={{ fontWeight: 600, fontSize: '14px', color: '#333', marginBottom: '4px' }}>
+                    {item.name}
+                  </div>
+                  <div style={{ color: '#666', fontSize: '12px' }}>
+                    {item.address}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-
-        {/* 검색 결과 리스트 */}
-        {results.length > 0 && (
-          <div style={{ marginTop: '12px', border: '1px solid #e5e5e5', borderRadius: 6, maxHeight: 220, overflowY: 'auto' }}>
-            {results.map((item, idx) => (
-              <div
-                key={item.id || `${item.name}-${idx}`}
-                style={{ padding: '10px 12px', cursor: 'pointer', borderBottom: '1px solid #f2f2f2' }}
-                onClick={() => handleSelect(item)}
-              >
-                <div style={{ fontWeight: 600 }}>{item.name}</div>
-                <div style={{ color: '#666', fontSize: 12 }}>{item.address}</div>
-              </div>
-            ))}
-          </div>
-        )}
 
         <label style={{ marginTop: '16px' }}>예식장 이름</label>
         <Input type="text" value={venueName} onChange={(e) => onChange({ address, venueName: e.target.value })} size="large" />

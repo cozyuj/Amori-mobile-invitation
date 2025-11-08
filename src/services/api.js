@@ -221,10 +221,19 @@ export const searchPlaces = async (query, size = 10) => {
   url.searchParams.set('size', size);
 
   const response = await fetch(url.toString(), { method: 'GET' });
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.detail || '장소 검색 실패');
+  
+  // 응답 본문을 먼저 파싱
+  const data = await response.json();
+  
+  // 응답이 배열이면 성공 (정상 응답)
+  if (Array.isArray(data)) {
+    return data;
+  }
+  
+  // 응답이 객체이고 에러 메시지가 있으면 에러
+  if (!response.ok || data.detail) {
+    throw new Error(data.detail || '장소 검색 실패');
   }
 
-  return response.json();
+  return data;
 };
