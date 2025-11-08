@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { DatePicker, TimePicker, Input, Button } from 'antd';
+import { DatePicker, TimePicker, Input, Button, Image } from 'antd';
 import dayjs from 'dayjs';
 import { uploadCoverImage, createInvitationDraft, searchPlaces } from '../services/api';
 
@@ -222,13 +222,38 @@ const Step4 = ({ username, coverPreview, onFileSelected, onNext }) => {
     <div className="wizard-step">
       <h2 className="wizard-title">{username}님, <br />청첩장 메인 커버사진을 골라주세요.</h2>
       <p className="wizard-subtitle">나중에 변경할 수 있어요.</p>
-      <label htmlFor="cover-image-upload" className="wizard-image-placeholder large upload-box" style={{ cursor: 'pointer' }}>
+      <div className="wizard-image-container">
         {coverPreview ? (
-          <img src={coverPreview} alt="커버 사진" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <Image
+            src={coverPreview}
+            alt="커버 사진"
+            style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+            preview={{
+              mask: '미리보기'
+            }}
+          />
         ) : (
-          <span style={{ fontSize: '80px', color: '#ccc' }}>×</span>
+          <label 
+            htmlFor="cover-image-upload" 
+            className="wizard-image-placeholder large upload-box"
+            style={{ 
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '300px',
+              border: '2px dashed #d9d9d9',
+              borderRadius: '8px'
+            }}
+          >
+            <div style={{ textAlign: 'center' }}>
+              <span style={{ fontSize: '32px', color: '#ccc' }}>+</span>
+              <br />
+              <span style={{ color: '#666' }}>클릭하여 사진 업로드</span>
+            </div>
+          </label>
         )}
-      </label>
+      </div>
       <input
         id="cover-image-upload"
         type="file"
@@ -236,7 +261,11 @@ const Step4 = ({ username, coverPreview, onFileSelected, onNext }) => {
         onChange={onFileSelected}
         style={{ display: 'none' }}
       />
-      <button className="wizard-btn-primary" onClick={onNext}>
+      <button 
+        className="wizard-btn-primary" 
+        onClick={onNext}
+        style={{ marginTop: '20px' }}
+      >
         다음
       </button>
     </div>
@@ -244,17 +273,24 @@ const Step4 = ({ username, coverPreview, onFileSelected, onNext }) => {
 };
 
 // 단계 5: 결혼 축하 (메인 사진)
-const Step5 = ({ username, onNext }) => (
+const Step5 = ({ username, onNext, coverPreview }) => (
   <div className="wizard-step">
     <h2 className="wizard-title">{username}님, <br />결혼 축하드려요.</h2>
-    <div className="wizard-image-placeholder large">
-      <img 
-        src="https://i.imgur.com/gS4kXcp.png" 
-        alt="Wedding sample" 
-        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+    <div className="wizard-image-container">
+      <Image
+        src={coverPreview || "https://i.imgur.com/gS4kXcp.png"}
+        alt="Wedding photo"
+        style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+        preview={{
+          mask: '미리보기'
+        }}
       />
     </div>
-    <button className="wizard-btn-primary" onClick={onNext}>
+    <button 
+      className="wizard-btn-primary" 
+      onClick={onNext}
+      style={{ marginTop: '20px' }}
+    >
       청첩장 생성하러 가기
     </button>
   </div>
@@ -540,7 +576,7 @@ function InvitationEditor({ username, invitationType, onBack, onNext }) {
               <Step2 username={username} address={address} venueName={venueName} onChange={({ address: a, venueName: v }) => { setAddress(a); setVenueName(v); }} onNext={() => setCurrentStep(2)} />
               <Step3 username={username} groomName={groomName} brideName={brideName} onChange={({ groomName: g, brideName: b }) => { setGroomName(g); setBrideName(b); }} onNext={() => setCurrentStep(3)} />
               <Step4 username={username} coverPreview={coverPreview} onFileSelected={handleFileSelected} onNext={() => setCurrentStep(4)} />
-              <Step5 username={username} onNext={handleNext} />
+              <Step5 username={username} onNext={handleNext} coverPreview={coverPreview} />
             </>
           )}
         </div>
